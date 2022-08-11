@@ -1,5 +1,12 @@
-use std::{env, fs::{OpenOptions, read_to_string}, path::Path};
-use std::io::prelude::*;
+use std::{
+    env,  
+    path::Path,
+    io::prelude::*,
+    fs::{
+        OpenOptions, 
+        read_to_string
+    }
+};
 use lazy_static::lazy_static;
 use regex::Regex;
 
@@ -16,32 +23,26 @@ fn normalize_spaces(text: &str) -> String {
 }
 
 fn main() {
+
     let txt_file = env::args().nth(1).expect("Missing first argument for input .txt file.");
 
-    let input_txt_file = Path::new(&txt_file);
+    let txt_file = Path::new(&txt_file);
     
-
-    // println!("Hello, world!, {}", input_txt_file.display());
-    // println!("File - Name: {:?}, Extension: {:?}", input_txt_file.file_name().unwrap(), input_txt_file.extension().unwrap());
-
-    if input_txt_file.is_file() {
+    if txt_file.is_file() {
 
         lazy_static! {
             static ref RE: Regex = Regex::new(r"\s+").unwrap();
         }
 
-        let data = read_to_string(input_txt_file).expect("Unable to open .txt file");
+        let data = read_to_string(txt_file).expect("Unable to open .txt file");
 
         let output_data = data.lines().map(|line|format!("{}\r\n", normalize_spaces(line))).collect::<String>();
-
-        // data = data.replace("  ", " ");
-        // data = data.replace( "\t", " ");
 
         let mut file = OpenOptions::new()
             .write(true)
             .truncate(true)
-            .open(input_txt_file)
-            .expect("Unable to update .txt file");
+            .open(txt_file)
+            .expect("Unable to open .txt file");
 
         file
             .write(output_data.as_bytes())
@@ -49,6 +50,6 @@ fn main() {
          
         
     } else {
-        eprintln!("'{}' file doesn't exist.", input_txt_file.display());
+        eprintln!("'{}' file doesn't exist.", txt_file.display());
     }
 }
